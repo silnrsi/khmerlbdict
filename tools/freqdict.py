@@ -10,8 +10,10 @@ import codecs, sys, re
 
 parser = ArgumentParser()
 parser.add_argument('dicts', nargs='+', help='csv wordlists to read')
-parser.add_argument('-w','--weight', nargs='+', help='relative weights for various wordlists')
+parser.add_argument('-w','--weight', action='append', type=int, help='relative weights for various wordlists')
 parser.add_argument('-o','--output', help='Output file')
+parser.add_argument('-n','--noexpansions', action='store_true', help="Don't create extra misspelled words")
+parser.add_argument('-l','--linear', action='store_true', help='Output linear frequencies')
 args = parser.parse_args()
 
 def checkok(t, w) :
@@ -43,7 +45,7 @@ for i in range(len(args.dicts)) :
             t = t[0:c].rstrip()
         else :
             w = 1
-        w *= (args.weight[i] if args.weight is not None and i < len(args.weight) else 1.)
+        w *= (float(args.weight[i]) if args.weight is not None and i < len(args.weight) else 1.)
         if checkok(t, w) :
             # regularise coeng order. Equivs will then add the other one back
             t = re.sub(ur'([\u17B7-\u17BA\u17BE\u17C1-\u17C3])(\u17d2[\u1780-\u17A2])', 
@@ -112,18 +114,22 @@ def procequiv(a, d, extras) :
                     extras.append((t, [e[0]]))
 
 extras = []
-for k in d.keys() :
-    procequiv(k, d, extras)
-for k in extras :
-    procequiv(k, d, extras)
+if not args.noexpansions :
+    for k in d.keys() :
+        procequiv(k, d, extras)
+    for k in extras :
+        procequiv(k, d, extras)
 
+total = float(total)
 scale = 255. / log10(m/total)
+def scalefreq(x) :
+    return x if args.linear else int(log10(x / total) * scale)
 
 outfh.write(u"\ufeff# Combined dictionary from:\n#   " + u"\n#   ".join(args.dicts) + u"\n")
 outfh.write(u"# Notice this dictionary is for word and line breaking and purposely contains spelling errors\n")
 for k in sorted(d.keys()) :
     if len(k) == 0 : continue
-    outfh.write(u"{}\t{}\n".format(k, int(log10(d[k] / total) * scale)))
+    outfh.write(u"{} {}\n".format(k, scalefreq(d[k])))
 outfh.close()
             
 print "Number of bad stripped characters: {}".format(badcount)
