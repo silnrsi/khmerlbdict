@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 from math import log10
 from itertools import combinations
 from functools import partial
-import codecs, sys, re
+import codecs, sys, re, math
 
 parser = ArgumentParser()
 parser.add_argument('dicts', nargs='+', help='csv wordlists to read')
@@ -34,6 +34,8 @@ m = None
 for i in range(len(args.dicts)) :
     fh = codecs.open(args.dicts[i], 'r', 'utf-8')
     ft = 0.
+    fts = 0.;
+    lcount = 0
     for l in fh.readlines() :
         t = l.strip().replace(u'\u200B', '')
         if t.startswith(u'\ufeff') : t = t[1:]
@@ -55,13 +57,16 @@ for i in range(len(args.dicts)) :
             else :
                 d[t] = w
             ft += w
+            fts += w * w
+            lcount += 1
             m = min(m, w) if m is not None else w
         else :
             badcount += 1
     fh.close()
     total += ft
     if args.output :
-        print "Total for {} = {:f}".format(args.dicts[i], ft)
+        print "Total for {} = {:f}, average = {:f}, s.d. = {:f}".format(args.dicts[i], ft, ft/lcount, \
+            math.sqrt((fts - ft * ft / lcount) / lcount))
 
 def xorval(offset, val, s) :
     t = list(s)
