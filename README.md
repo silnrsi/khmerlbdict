@@ -8,6 +8,7 @@ Sources are:
 * seafreq.txt. Taken from the SEALang Khmer frequency based wordlist [http://sealang.net/project/list/]
 * villages.txt. A list of all village and region names
 * places.txt. Language, script, territory and exemplar city names taken from CLDR.
+* names.txt. Various first and last names.
 
 The files are edited to remove bad data, for example villages called 'number1'.
 
