@@ -9,8 +9,10 @@ Sources are:
 * villages.txt. A list of all village and region names
 * places.txt. Language, script, territory and exemplar city names taken from CLDR.
 * names.txt. Various first and last names.
+* KHOV.txt. Word list of the Khmer Bible Old Version.
+* KHSV.txt. Word List of the Khmer Bible New Version.
 
-The files are edited to remove bad data, for example villages called 'number1'.
+The files are edited to remove bad data, for example villages called 'number1' or zero-width-spaces, also removed terms like 'upper', 'lower', 'eastern' from village and place names as long as the remaining part of the name had a length of at least 3 clusters.
 
 A program then calculates the log frequencies needed for CLDR and adds equivalences for bad spellings.
 This will mean badly spelled data that is hard to spot will break correctly and it will be up to a
