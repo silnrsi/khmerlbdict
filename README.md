@@ -11,6 +11,9 @@ Sources are:
 * names.txt. Various first and last names.
 * KHOV.txt. Word list of the Khmer Bible Old Version.
 * KHSV.txt. Word List of the Khmer Bible Standard Version.
+* DFD.txt Frequency based wordlist from a Khmer book series entitled គម្រោង​នៃ​ការបង្កើត​សិស្ស
+* HC.txt Frequency based wordlist from a Khmer book entitled ពួកជំនុំ​ដែល​មាន​សុខភាព​ល្អ
+* TD.txt Frequency based wordlist from a Khmer book entitled សិស្ស​ដ៏​ពិត​របស់​ព្រះយេស៊ូវ
 
 The files are edited to remove bad data, for example villages called 'number1' or zero-width-spaces, also removed terms like 'upper', 'lower', 'eastern' from village and place names as long as the remaining part of the name had a length of at least 3 clusters.
 
