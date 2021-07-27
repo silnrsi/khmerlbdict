@@ -50,8 +50,7 @@ for i in range(len(args.dicts)) :
         w *= (float(args.weight[i]) if args.weight is not None and i < len(args.weight) else 1.)
         if checkok(t, w) :
             # regularise coeng order. Equivs will then add the other one back
-            t = re.sub(ur'([\u17B7-\u17BA\u17BE\u17C1-\u17C3])(\u17d2[\u1780-\u17A2])', 
-                    ur'\2\1', t)
+            t = re.sub('([\u17B7-\u17BA\u17BE\u17C1-\u17C3])(\u17d2[\u1780-\u17A2])', '\2\1', t)
             if t in d :
                 d[t] += w
             else :
@@ -65,12 +64,12 @@ for i in range(len(args.dicts)) :
     fh.close()
     total += ft
     if args.output :
-        print "Total for {} = {:f}, average = {:f}, s.d. = {:f}".format(args.dicts[i], ft, ft/lcount, \
-            math.sqrt((fts - ft * ft / lcount) / lcount))
+        print("Total for {} = {:f}, average = {:f}, s.d. = {:f}".format(args.dicts[i], ft, ft/lcount, \
+            math.sqrt((fts - ft * ft / lcount) / lcount)))
 
 def xorval(offset, val, s) :
     t = list(s)
-    t[offset] = unichr(ord(s[offset]) ^ val)
+    t[offset] = chr(ord(s[offset]) ^ val)
     return u"".join(t)
 
 def swaptxt(a, b, s) :
@@ -78,34 +77,34 @@ def swaptxt(a, b, s) :
     
 equivs = [
     # (regex, index into substring to change, xor value)
-    (re.compile(ur'(\u17d2[\u178a\u178f])'), 2, partial(xorval, 1, 5)),
-    (re.compile(ur'(\u17d2[\u178b\u1792])'), 2, partial(xorval, 1, 0x19)),
-    (re.compile(ur'([\u17b7\u17b8])'), 1, partial(xorval, 0, 15)),
-    (re.compile(ur'([\u17b1\u17b3])'), 1, partial(xorval, 0, 2)),
-    (re.compile(ur'(\u17cc)'), 1, partial(xorval, 0, 3)),
-    (re.compile(ur'(\u17cf)'), 1, partial(xorval, 0, 2)),
-    (re.compile(ur'(\u17d2[\u1780-\u17A2][\u17B7-\u17BA\u17BE\u17C1-\u17C3])'),
+    (re.compile('(\u17d2[\u178a\u178f])'), 2, partial(xorval, 1, 5)),
+    (re.compile('(\u17d2[\u178b\u1792])'), 2, partial(xorval, 1, 0x19)),
+    (re.compile('([\u17b7\u17b8])'), 1, partial(xorval, 0, 15)),
+    (re.compile('([\u17b1\u17b3])'), 1, partial(xorval, 0, 2)),
+    (re.compile('(\u17cc)'), 1, partial(xorval, 0, 3)),
+    (re.compile('(\u17cf)'), 1, partial(xorval, 0, 2)),
+    (re.compile('(\u17d2[\u1780-\u17A2][\u17B7-\u17BA\u17BE\u17C1-\u17C3])'),
             3, partial(swaptxt, 2, 3)),
 ]
 
 def acsum2(x) :
     a = x[0]
     yield a
-    for i in range((len(x)-2)/2) :
+    for i in range(int((len(x)-2)/2)) :
         a += x[i*2 + 1]
         a += x[i*2 + 2]
         yield a
 
 def procequiv(a, d, extras) :
     for e in equivs :
-        if not isinstance(a, basestring) :
+        if not isinstance(a, str) :
             if e[0] in a[1] : continue
             k = a[0]
         else :
             k = a
         s = re.split(e[0], k)
         if len(s) == 1 : continue
-        inds = list(acsum2(map(len, s)))
+        inds = list(acsum2(list(map(len, s))))
         for i in range(len(inds)) :
             for c in combinations(inds, i+1) :
                 t = k[:]
@@ -113,14 +112,14 @@ def procequiv(a, d, extras) :
                     t = t[0:j] + e[2](t[j:j+e[1]]) + t[j+e[1]:]
                 if t not in d :
                     d[t] = d[k]
-                if not isinstance(a, basestring) :
+                if not isinstance(a, str) :
                     extras.append((t, a[1] + [e[0]]))
                 else :
                     extras.append((t, [e[0]]))
 
 extras = []
 if not args.noexpansions :
-    for k in d.keys() :
+    for k in list(d.keys()):
         procequiv(k, d, extras)
     for k in extras :
         procequiv(k, d, extras)
@@ -137,4 +136,4 @@ for k in sorted(d.keys()) :
     outfh.write(u"{} {}\n".format(k, scalefreq(d[k])))
 outfh.close()
             
-print "Number of bad stripped characters: {}".format(badcount)
+print("Number of bad stripped characters: {}".format(badcount))
